@@ -11,6 +11,7 @@ from app.scheduler import start_scheduler, stop_scheduler
 from app.routers import state as state_router
 from app.routers import interactions as interactions_router
 from app.routers import websocket as websocket_router
+from app.routers import chat as chat_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -51,3 +52,4 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 app.include_router(state_router.router)
 app.include_router(interactions_router.router)
 app.include_router(websocket_router.router)
+app.include_router(chat_router.router)

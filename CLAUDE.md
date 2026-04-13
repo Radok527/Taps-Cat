@@ -34,7 +34,10 @@ curl http://localhost:8000/state
 curl -X POST http://localhost:8000/feed
 curl -X POST http://localhost:8000/play
 curl -X POST http://localhost:8000/pet
+curl -X POST http://localhost:8000/chat -H "Content-Type: application/json" -d '{"message": "Hallo!"}'
 ```
+
+**Note:** For local dev, `MINIMAX_API_KEY` and `MINIMAX_GROUP_ID` must be set either in `backend/.env` or as environment variables when starting uvicorn. The `.env` in the repo root is for Docker Compose only (uses Docker service hostnames). Without valid keys the chat endpoint returns a graceful fallback response (`*yawns* ... meow.`) with HTTP 200 — all other fields are still correct.
 
 ### Full stack via Docker Compose
 
@@ -67,7 +70,7 @@ docker compose up --build
 | `services/cat_state.py` | Read/write cat state Hash in Redis; clamp stats to [5, 100] |
 | `services/session.py` | Per-IP chat history in Redis; TTL refreshed to midnight on every write |
 | `services/rate_limit.py` | Atomic `INCR` + `EXPIREAT` pipelines for all limits |
-| `services/minimax_chat.py` | Minimax Chat client + system prompt |
+| `services/minimax_chat.py` | Minimax Chat client + system prompt; `send_message(history, new_message) -> str`; graceful fallback on error |
 | `services/minimax_image.py` | Minimax Image client; saves UUID-named PNG to `IMAGES_DIR` |
 | `services/challenge.py` | Detects `[GENERATE_IMAGE: <prompt>]`; NSFW blocklist; prompt hardening via `build_image_prompt()` |
 | `services/broadcast.py` | Publishes state JSON to Redis channel `tami:broadcast` |
@@ -119,10 +122,27 @@ See `.env.example`. Required: `MINIMAX_API_KEY`, `MINIMAX_GROUP_ID`. `ALLOWED_OR
 
 ## Implementation Status
 
-Phases 0–3 are complete:
+Phases 0–4 are complete:
 - **Phase 0** — Scaffolding (Docker Compose, Postgres, Redis, Alembic migrations, config)
 - **Phase 1** — Cat state core: `GET /state`, `POST /feed /play /pet`, hourly APScheduler drain
 - **Phase 2** — WebSocket `WS /ws`: Redis pub/sub fan-out, visitor count, real-time broadcast on all mutations
 - **Phase 3** — Rate limiting (`services/rate_limit.py`: atomic INCR+EXPIREAT) + per-IP session persistence (`services/session.py`)
+- **Phase 4** — AI chat: `POST /chat` with Minimax integration, per-IP conversation history, rate limiting, `happy +5` on each message
 
-Phases 4–7 (AI chat, challenge flow, guestbook, frontend) are not yet built. Follow the phase order in `PLAN.md`.
+### Phase 4 patterns introduced
+
+**`send_message(history, new_message)` contract:**
+- `history` is the conversation so far *excluding* the new message
+- Internally prepends the system prompt as `{role: "system"}` and appends the new user message
+- Trims history to last 20 entries before sending to avoid token overflow
+- Always returns a string — never raises
+
+**`POST /chat` flow:**
+1. Rate check (IP limit → global limit, both via atomic INCR+EXPIREAT)
+2. Load session → call Minimax → append both user+assistant messages → save session
+3. `apply_delta(happy_delta=5, action="chat")` — also broadcasts to all WS clients
+4. Return `ChatResponse` with `messages_left` (from IP rate counter) and `daily_images_left` (from `global:image_count`)
+
+**`challenge_success` and `image_url`** are always `false`/`null` in Phase 4. Phase 5 extends the router to detect `[GENERATE_IMAGE: <prompt>]` and populate these fields.
+
+Phases 5–7 (challenge flow, guestbook, frontend) are not yet built. Follow the phase order in `PLAN.md`.

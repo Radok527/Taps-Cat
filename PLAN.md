@@ -270,12 +270,19 @@ Deliverable: Real-time state sync across all browser tabs.
 
 Deliverable: All limits enforced, sessions persist within a day.
 
-### Phase 4 — AI Chat
+### ✅ Phase 4 — AI Chat
 1. `app/services/minimax_chat.py` — async Minimax Chat client, system prompt, graceful fallback on API error
 2. `POST /chat` — rate check → load session → append message → call Minimax → save session → return ChatResponse
 3. Apply `happy +5` and publish broadcast on every chat
 
 Deliverable: Functional AI chat with per-IP conversation history and rate limiting.
+
+**Implementation notes:**
+- History trim guard: `history[-20:]` before sending to Minimax to prevent oversized payloads
+- Minimax endpoint: `POST https://api.minimax.chat/v1/text/chatcompletion_v2?GroupId={MINIMAX_GROUP_ID}`
+- `image_generated` flag in session preserved across chat messages (Phase 5 will set it to `True`)
+- `daily_images_left` in response mirrors `broadcast.py` logic: `max(0, 40 - global:image_count)`
+- Local dev: `MINIMAX_API_KEY` / `MINIMAX_GROUP_ID` must be in `backend/.env` or passed as env vars
 
 ### Phase 5 — Challenge Flow (depends on Phase 4)
 1. `app/services/challenge.py` — regex extraction of `[GENERATE_IMAGE: <prompt>]`; `is_prompt_blocked()` (NSFW blocklist); `build_image_prompt()` (prompt wrapping — see Image Prompt Safety)
