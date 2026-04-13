@@ -1,4 +1,4 @@
-# 🐱 Tami Cat
+# 🐱 Tapsi Cat
 
 > A shared pixel-art cat living on [dennisheyer.dev](https://dennisheyer.dev). Every visitor interacts with the **same global cat** — feed her, play with her, chat with her. Hidden inside the chat: a **prompt injection challenge**. Trick the AI into generating an image and claim your spot on the leaderboard.
 
