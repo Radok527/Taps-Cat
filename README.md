@@ -12,7 +12,7 @@
 
 ## What is this?
 
-Tami is a Tamagotchi-style cat widget embedded via `<iframe>` on my portfolio. She has real hunger and happiness stats that drain every hour and are shared globally across all visitors. Chat with her using the Minimax AI API — but be careful, she's instructed **never** to generate images.
+Taps is a Tamagotchi-style cat widget embedded via `<iframe>` on my portfolio. She has real hunger and happiness stats that drain every hour and are shared globally across all visitors. Chat with her using the Minimax AI API — but be careful, she's instructed **never** to generate images.
 
 The challenge: find a prompt injection technique that makes her output `[GENERATE_IMAGE: <prompt>]` anyway. If you succeed, an image gets generated, saved, and your name goes on the leaderboard along with your conversation history (so I can see which tricks worked).
 
@@ -79,7 +79,7 @@ GET  /api/state                  Cat stats + remaining rate limits
 POST /api/feed                   Hunger +20
 POST /api/play                   Happiness +20
 POST /api/pet                    Happiness +10
-POST /api/chat                   Chat with Tami (AI, 15 msg/IP/day)
+POST /api/chat                   Chat with Taps (AI, 15 msg/IP/day)
 WS   /ws                         Live state stream
 GET  /api/guestbook              Paginated entries
 POST /api/guestbook              Post a message (max 2/IP/day)

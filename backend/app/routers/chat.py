@@ -134,7 +134,7 @@ async def chat(
         image_generated=image_generated_flag,
     )
 
-    # --- Cat state: chat makes Tami happier; apply_delta also broadcasts to WS clients ---
+    # --- Cat state: chat makes Taps happier; apply_delta also broadcasts to WS clients ---
     await apply_delta(
         redis,
         hunger_delta=0,

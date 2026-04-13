@@ -1,8 +1,8 @@
-# Tami Cat – Implementation Plan
+# Taps Cat – Implementation Plan
 
 ## Context
 
-Tami is a shared AI cat widget embedded via iframe on Dennis Heyer's portfolio. All visitors interact with the same global cat. A hidden prompt-injection challenge lets clever visitors trick the AI into generating an image despite system-prompt instructions forbidding it.
+Taps is a shared AI cat widget embedded via iframe on Dennis Heyer's portfolio. All visitors interact with the same global cat. A hidden prompt-injection challenge lets clever visitors trick the AI into generating an image despite system-prompt instructions forbidding it.
 
 ---
 

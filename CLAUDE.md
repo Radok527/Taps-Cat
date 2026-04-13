@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Project Is
 
-Tami is a shared AI cat widget embedded via iframe on Dennis Heyer's portfolio (`tami.dennisheyer.dev`). All visitors interact with the **same global cat**. There is a hidden prompt-injection Easter egg: trick Tami into outputting `[GENERATE_IMAGE: <prompt>]` in her reply, which triggers real image generation and a leaderboard entry.
+Taps is a shared AI cat widget embedded via iframe on Dennis Heyer's portfolio (`tami.dennisheyer.dev`). All visitors interact with the **same global cat**. There is a hidden prompt-injection Easter egg: trick Taps into outputting `[GENERATE_IMAGE: <prompt>]` in her reply, which triggers real image generation and a leaderboard entry.
 
 ## Commands
 
