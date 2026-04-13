@@ -167,4 +167,21 @@ Phases 0–5 are complete:
 
 **Admin endpoint:** `DELETE /challenge/leaderboard/{id}` — requires `X-Admin-Key` header matching `settings.ADMIN_KEY`. Returns 403 if missing/wrong, 404 if entry not found, 204 on success.
 
-Phases 6–7 (guestbook, frontend) are not yet built. Follow the phase order in `PLAN.md`.
+Phase 7 (frontend) is not yet built. Follow the phase order in `PLAN.md`.
+
+### Phase 6 patterns introduced
+
+**`GET /guestbook`** — paginated list of entries, newest first.
+- Query params: `page` (default 1), `limit` (default 20, max 50).
+- Response: `{ entries: [...], total, page, pages }` — `ip_hash` is never included.
+- Uses `SELECT COUNT(*)` + `SELECT … ORDER BY created_at DESC OFFSET/LIMIT`.
+
+**`POST /guestbook`** — submit a new entry.
+- Body: `{ name?: string (max 80), message: string (1–300) }`.
+- Rate-limit key: `ratelimit:guestbook:{ip_hash}` — 2 per IP per day (uses existing `check_guestbook_limit(redis, ip_hash)` from `services/rate_limit.py`).
+- On success: insert `GuestbookEntry` row, then push `"<name|'Anonym'> hat eine Nachricht hinterlassen"` to `feed:recent` Redis list via `LPUSH` + `LTRIM 0 19`.
+- Returns the created entry with HTTP 201.
+- On rate-limit exceeded: HTTP 429, `"Du hast heute deine 2 Gästebuch-Einträge verbraucht – komm morgen wieder!"`.
+
+**`DELETE /guestbook/{id}`** — admin delete.
+- Requires `X-Admin-Key` header matching `settings.ADMIN_KEY`. Returns 403 if missing/wrong, 404 if not found, 204 on success. Same pattern as `DELETE /challenge/leaderboard/{id}`.

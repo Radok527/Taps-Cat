@@ -14,6 +14,7 @@ from app.routers import state as state_router
 from app.routers import interactions as interactions_router
 from app.routers import websocket as websocket_router
 from app.routers import chat as chat_router
+from app.routers import guestbook as guestbook_router
 from app.routers import leaderboard as leaderboard_router
 
 logging.basicConfig(level=logging.INFO)
@@ -60,4 +61,5 @@ app.include_router(interactions_router.router)
 app.include_router(websocket_router.router)
 app.include_router(chat_router.router)
 app.include_router(leaderboard_router.router)
+app.include_router(guestbook_router.router)
 app.mount("/images", StaticFiles(directory=settings.IMAGES_DIR), name="images")

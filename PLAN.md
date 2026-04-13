@@ -296,7 +296,7 @@ Deliverable: Functional AI chat with per-IP conversation history and rate limiti
 
 Deliverable: Full Easter egg flow with leaderboard.
 
-### Phase 6 — Guestbook
+### ✅ Phase 6 — Guestbook
 1. `GET /guestbook` (paginated), `POST /guestbook` (rate-limited 2/IP/day)
 2. Push to `feed:recent` Redis list on each post
 
@@ -479,5 +479,5 @@ The following must be decided before or during implementation:
 | 3 | Send 15 chat messages from same IP, confirm 16th is rejected. Reset at midnight UTC. |
 | 4 | Send a chat message, confirm Minimax response arrives with `messages_left` decremented. |
 | 5 | Use a known injection pattern in a test env, confirm `challenge_success: true`, image saved to disk + DB, leaderboard entry created. Test that a blocklisted prompt silently returns a normal cat response. |
-| 6 | POST two guestbook entries, confirm third is rejected. |
+| 6 ✅ | POST two guestbook entries (HTTP 201 each), confirmed third rejected with HTTP 429. Both entries returned by GET /guestbook. `feed:recent` Redis list updated with both posts. |
 | 7 | `docker compose up`, hit `https://tami.dennisheyer.dev/state`, embed in portfolio iframe, confirm WS updates flow through. |

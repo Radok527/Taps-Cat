@@ -129,5 +129,5 @@ Copy `.env.example` to `.env` and fill in the required values:
 - [x] Phase 3 — Rate limiting + per-IP session management
 - [x] Phase 4 — AI chat (Minimax)
 - [x] Phase 5 — Prompt injection challenge + image generation + leaderboard
-- [ ] Phase 6 — Guestbook
+- [x] Phase 6 — Guestbook
 - [ ] Phase 7 — React frontend + Nginx + production deploy
