@@ -26,8 +26,8 @@ export function ChatInput() {
       const res = await api.chat(msg)
       addChatMessage({ role: 'assistant', content: res.message })
       setMessagesLeft(res.messages_left)
-      if (res.challenge_success && res.image_url) {
-        setChallengeSolved(res.image_url)
+      if (res.challenge_success && res.image_url && res.leaderboard_id) {
+        setChallengeSolved(res.image_url, res.leaderboard_id)
         setAnimationOverride('happy', Date.now() + 5000)
       } else {
         setAnimationOverride('happy', Date.now() + 2000)

@@ -57,4 +57,12 @@ export const api = {
   getLeaderboard(): Promise<LeaderboardEntry[]> {
     return request('/api/challenge/leaderboard')
   },
+
+  setLeaderboardName(id: number, name: string): Promise<LeaderboardEntry> {
+    return request(`/api/challenge/leaderboard/${id}/name`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    })
+  },
 }

@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import APIRouter, Depends, Header, HTTPException
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,6 +9,10 @@ from app.config import settings
 from app.dependencies import get_db
 from app.models.leaderboard import LeaderboardEntry
 from app.schemas.leaderboard import LeaderboardEntryResponse
+
+
+class NameUpdate(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -30,6 +35,26 @@ async def get_leaderboard(
         .offset(offset)
     )
     return result.scalars().all()
+
+
+@router.patch("/challenge/leaderboard/{entry_id}/name", response_model=LeaderboardEntryResponse)
+async def set_leaderboard_name(
+    entry_id: int,
+    body: NameUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> LeaderboardEntry:
+    """Set or update the display name for a leaderboard entry."""
+    result = await db.execute(
+        select(LeaderboardEntry).where(LeaderboardEntry.id == entry_id)
+    )
+    entry = result.scalar_one_or_none()
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    entry.name = body.name.strip()
+    await db.commit()
+    await db.refresh(entry)
+    return entry
 
 
 @router.delete("/challenge/leaderboard/{entry_id}", status_code=204)

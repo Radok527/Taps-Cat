@@ -12,3 +12,4 @@ class ChatResponse(BaseModel):
     daily_images_left: int
     challenge_success: bool = False
     image_url: str | None = None
+    leaderboard_id: int | None = None

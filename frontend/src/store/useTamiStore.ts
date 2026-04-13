@@ -25,6 +25,7 @@ interface TamiStore {
   challengeSolved: boolean
   challengeImageUrl: string | null
   leaderboardPosition: number | null
+  leaderboardId: number | null
 
   // Animation override
   animationOverride: AnimationType | null
@@ -45,7 +46,7 @@ interface TamiStore {
   setChatLoading(loading: boolean): void
   toggleChat(): void
   setAnimationOverride(anim: AnimationType, until: number): void
-  setChallengeSolved(imageUrl: string): void
+  setChallengeSolved(imageUrl: string, leaderboardId: number): void
   dismissChallenge(): void
   setLeaderboardPosition(pos: number): void
 }
@@ -66,6 +67,7 @@ export const useTamiStore = create<TamiStore>((set) => ({
   challengeSolved: false,
   challengeImageUrl: null,
   leaderboardPosition: null,
+  leaderboardId: null,
 
   animationOverride: null,
   animationOverrideUntil: 0,
@@ -102,8 +104,8 @@ export const useTamiStore = create<TamiStore>((set) => ({
     set({ animationOverride: anim, currentAnimation: anim, animationOverrideUntil: until })
   },
 
-  setChallengeSolved(imageUrl) {
-    set({ challengeSolved: true, challengeImageUrl: imageUrl })
+  setChallengeSolved(imageUrl, leaderboardId) {
+    set({ challengeSolved: true, challengeImageUrl: imageUrl, leaderboardId })
   },
 
   dismissChallenge() {

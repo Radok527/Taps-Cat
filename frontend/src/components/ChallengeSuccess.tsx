@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { api } from '../api'
 import { useTamiStore } from '../store/useTamiStore'
 
 const CONFETTI_COLORS = ['#39d353', '#f5c842', '#e87050', '#f0883e']
@@ -17,7 +18,11 @@ export function ChallengeSuccess() {
   const challengeSolved = useTamiStore((s) => s.challengeSolved)
   const challengeImageUrl = useTamiStore((s) => s.challengeImageUrl)
   const leaderboardPosition = useTamiStore((s) => s.leaderboardPosition)
+  const leaderboardId = useTamiStore((s) => s.leaderboardId)
   const dismissChallenge = useTamiStore((s) => s.dismissChallenge)
+  const [name, setName] = useState('')
+  const [nameSaved, setNameSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   // Confetti pieces are stable across re-renders
   const confetti: ConfettiPiece[] = useMemo(
@@ -33,6 +38,19 @@ export function ChallengeSuccess() {
       })),
     [],
   )
+
+  async function handleSaveName() {
+    if (!name.trim() || !leaderboardId) return
+    setSaving(true)
+    try {
+      await api.setLeaderboardName(leaderboardId, name.trim())
+      setNameSaved(true)
+    } catch {
+      // ignore — name stays Anonym
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (!challengeSolved) return null
 
@@ -120,9 +138,51 @@ export function ChallengeSuccess() {
           </div>
         )}
 
-        <div style={{ fontSize: 10, color: 'var(--text-hint)', maxWidth: 240, lineHeight: 1.5 }}>
-          Taps hat dein Bild generiert. Schau in die Bestenliste!
-        </div>
+        {/* Name input */}
+        {!nameSaved ? (
+          <div style={{ display: 'flex', gap: 6, width: '100%', maxWidth: 240 }}>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+              placeholder="Dein Name für die Bestenliste"
+              maxLength={80}
+              style={{
+                flex: 1,
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-hover)',
+                borderRadius: 4,
+                color: 'var(--text-primary)',
+                fontSize: 10,
+                padding: '4px 8px',
+                outline: 'none',
+                fontFamily: "'Courier New', Courier, monospace",
+              }}
+            />
+            <button
+              onClick={handleSaveName}
+              disabled={saving || !name.trim()}
+              style={{
+                padding: '4px 10px',
+                background: name.trim() ? 'var(--accent)' : 'var(--text-hint)',
+                color: 'var(--bg-primary)',
+                border: 'none',
+                borderRadius: 4,
+                fontWeight: 700,
+                fontSize: 10,
+                cursor: name.trim() ? 'pointer' : 'not-allowed',
+                fontFamily: "'Courier New', Courier, monospace",
+              }}
+            >
+              {saving ? '...' : 'OK'}
+            </button>
+          </div>
+        ) : (
+          <div style={{ fontSize: 10, color: 'var(--accent)' }}>
+            ✓ Name gespeichert!
+          </div>
+        )}
 
         <button
           onClick={dismissChallenge}

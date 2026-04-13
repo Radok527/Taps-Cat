@@ -153,4 +153,5 @@ async def chat(
         daily_images_left=daily_images_left,
         challenge_success=challenge_success,
         image_url=image_url_out,
+        leaderboard_id=lb.id if challenge_success else None,
     )

@@ -13,6 +13,7 @@ export interface ChatResponse {
   daily_images_left: number
   challenge_success: boolean
   image_url: string | null
+  leaderboard_id: number | null
 }
 
 export interface GuestbookEntry {
