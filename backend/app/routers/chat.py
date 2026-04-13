@@ -55,7 +55,7 @@ async def chat(
     if not global_allowed:
         raise HTTPException(
             status_code=429,
-            detail="Tami ist müde und braucht eine Pause – komm morgen wieder!",
+            detail="Taps ist müde und braucht eine Pause – komm morgen wieder!",
         )
 
     # --- Session ---

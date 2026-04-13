@@ -11,6 +11,7 @@ interface TamiStore {
   hunger: number
   happy: number
   lastAction: string
+  lastActionAt: number   // ms timestamp of last lastAction update
   visitorCount: number
   dailyImagesLeft: number
 
@@ -25,9 +26,11 @@ interface TamiStore {
   challengeImageUrl: string | null
   leaderboardPosition: number | null
 
-  // UI
-  currentAnimation: AnimationType
+  // Animation override
+  animationOverride: AnimationType | null
   animationOverrideUntil: number
+  /** @deprecated use animationOverride */
+  currentAnimation: AnimationType
 
   // Actions
   setLiveState(state: {
@@ -51,6 +54,7 @@ export const useTamiStore = create<TamiStore>((set) => ({
   hunger: 70,
   happy: 70,
   lastAction: '',
+  lastActionAt: 0,
   visitorCount: 0,
   dailyImagesLeft: 40,
 
@@ -63,11 +67,19 @@ export const useTamiStore = create<TamiStore>((set) => ({
   challengeImageUrl: null,
   leaderboardPosition: null,
 
-  currentAnimation: 'idle',
+  animationOverride: null,
   animationOverrideUntil: 0,
+  currentAnimation: 'idle',
 
   setLiveState({ hunger, happy, lastAction, visitorCount, dailyImagesLeft }) {
-    set({ hunger, happy, lastAction, visitorCount, dailyImagesLeft })
+    set((s) => ({
+      hunger,
+      happy,
+      visitorCount,
+      dailyImagesLeft,
+      lastAction,
+      lastActionAt: lastAction !== s.lastAction ? Date.now() : s.lastActionAt,
+    }))
   },
 
   setMessagesLeft(n) {
@@ -87,7 +99,7 @@ export const useTamiStore = create<TamiStore>((set) => ({
   },
 
   setAnimationOverride(anim, until) {
-    set({ currentAnimation: anim, animationOverrideUntil: until })
+    set({ animationOverride: anim, currentAnimation: anim, animationOverrideUntil: until })
   },
 
   setChallengeSolved(imageUrl) {

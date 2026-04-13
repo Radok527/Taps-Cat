@@ -5,15 +5,14 @@ import type { AnimationType } from '../types'
 
 interface ActionConfig {
   label: string
-  emoji: string
   anim: AnimationType
   call: () => Promise<unknown>
 }
 
 const ACTIONS: ActionConfig[] = [
-  { label: 'Füttern', emoji: '🍖', anim: 'eating', call: () => api.feed() },
-  { label: 'Spielen', emoji: '🎾', anim: 'playing', call: () => api.play() },
-  { label: 'Streicheln', emoji: '🤗', anim: 'happy', call: () => api.pet() },
+  { label: '🍖 Füttern',    anim: 'eating',  call: () => api.feed() },
+  { label: '🎮 Spielen',    anim: 'playing', call: () => api.play() },
+  { label: '🐾 Streicheln', anim: 'happy',   call: () => api.pet()  },
 ]
 
 export function ActionButtons() {
@@ -43,27 +42,47 @@ export function ActionButtons() {
     }
   }
 
+  const anyLoading = loading !== null
+
   return (
-    <div style={{ display: 'flex', gap: 8, padding: '0 16px 12px', justifyContent: 'center' }}>
+    <div style={{
+      display: 'flex',
+      gap: 5,
+      padding: '8px 10px',
+      borderBottom: '1px solid var(--border)',
+    }}>
       {ACTIONS.map((action) => (
         <button
           key={action.label}
-          disabled={loading !== null}
+          disabled={anyLoading}
           onClick={() => handleAction(action)}
           style={{
             flex: 1,
-            padding: '8px 4px',
-            background: loading === action.label ? '#4a5568' : '#2d3748',
-            color: loading !== null ? '#718096' : '#e0e0e0',
-            border: '1px solid #4a5568',
-            borderRadius: 8,
-            cursor: loading !== null ? 'not-allowed' : 'pointer',
-            fontSize: 13,
-            fontWeight: 600,
-            transition: 'background 0.2s',
+            padding: '6px 4px',
+            background: 'var(--bg-secondary)',
+            border: `1px solid var(--border-hover)`,
+            borderRadius: 6,
+            color: anyLoading ? 'var(--text-hint)' : 'var(--text-primary)',
+            cursor: anyLoading ? 'not-allowed' : 'pointer',
+            fontSize: 10,
+            fontFamily: "'Courier New', Courier, monospace",
+            opacity: anyLoading ? 0.4 : 1,
+            transition: 'border-color 0.15s, color 0.15s',
+          }}
+          onMouseEnter={(e) => {
+            if (!anyLoading) {
+              const btn = e.currentTarget
+              btn.style.borderColor = 'var(--accent)'
+              btn.style.color = 'var(--accent)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            const btn = e.currentTarget
+            btn.style.borderColor = 'var(--border-hover)'
+            btn.style.color = anyLoading ? 'var(--text-hint)' : 'var(--text-primary)'
           }}
         >
-          {action.emoji} {action.label}
+          {action.label}
         </button>
       ))}
     </div>

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Starting Tami Cat backend…")
+    logger.info("Starting Taps Cat backend…")
     redis = await init_redis()
     start_scheduler(redis)
 
@@ -36,10 +36,10 @@ async def lifespan(app: FastAPI):
     # Shutdown
     stop_scheduler()
     await close_redis()
-    logger.info("Tami Cat backend stopped")
+    logger.info("Taps Cat backend stopped")
 
 
-app = FastAPI(title="Tami Cat API", lifespan=lifespan)
+app = FastAPI(title="Taps Cat API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

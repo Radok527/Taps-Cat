@@ -1,85 +1,38 @@
-import { useEffect, useRef, useState } from 'react'
 import type { AnimationType } from '../types'
 
-interface Props {
+// Sprite mapping from actual filenames in src/assets/sprites/
+// idle     → seated-on-belly-idle (explicit idle/resting pose)
+// happy    → walk-4-frames_east   (active walking = cheerful)
+// eating   → eating_east          (explicit eating)
+// playing  → rotations_4dir       (multi-direction movement = playful)
+// sleeping → seated-on-belly-idle (belly rest = sleeping, same pose as idle)
+// curious  → angry_south          (alert/watchful expression)
+const SPRITES: Record<AnimationType, string> = {
+  idle:     new URL('../assets/sprites/a_wildcat_seated-on-belly-idle_south.gif', import.meta.url).href,
+  happy:    new URL('../assets/sprites/a_wildcat_walk-4-frames_east.gif',         import.meta.url).href,
+  eating:   new URL('../assets/sprites/a_wildcat_eating_east.gif',                import.meta.url).href,
+  playing:  new URL('../assets/sprites/a_wildcat_rotations_4dir.gif',             import.meta.url).href,
+  sleeping: new URL('../assets/sprites/a_wildcat_seated-on-belly-idle_south.gif', import.meta.url).href,
+  curious:  new URL('../assets/sprites/a_wildcat_angry_south.gif',                import.meta.url).href,
+}
+
+interface CatSpriteProps {
   animation: AnimationType
-  facingAngle: number
+  facingLeft: boolean
 }
 
-const ANIM_CONFIG: Record<AnimationType, { color: string; label: string }> = {
-  idle:     { color: '#e8a87c', label: '(=^･ω･^=)' },
-  happy:    { color: '#f9d342', label: '(=^▽^=)' },
-  eating:   { color: '#88c057', label: '(=^‥^=)' },
-  playing:  { color: '#5ab4e5', label: '(=^●ω●^=)' },
-  sleeping: { color: '#a78bfa', label: '(=^-ω-^=)zzz' },
-  curious:  { color: '#f87171', label: '(=^･o･^=)?' },
-}
-
-const FRAMES = 4
-
-export function CatSprite({ animation, facingAngle }: Props) {
-  const [frame, setFrame] = useState(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setFrame((f) => (f + 1) % FRAMES)
-    }, 200)
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [])
-
-  const { color, label } = ANIM_CONFIG[animation]
-  const flipX = Math.cos(facingAngle) < 0 ? -1 : 1
-  const frameOffset = frame * 4 // px bounce per frame
-
-  const bounce = animation === 'happy'
-    ? [0, -6, -10, -6][frame]
-    : animation === 'playing'
-    ? [0, -4, 0, 4][frame]
-    : animation === 'eating'
-    ? [0, 2, 0, -2][frame]
-    : 0
-
+export function CatSprite({ animation, facingLeft }: CatSpriteProps) {
   return (
-    <div
+    <img
+      src={SPRITES[animation]}
+      alt={animation}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        transform: `scaleX(${flipX}) translateY(${bounce + frameOffset * 0}px)`,
-        transition: 'transform 0.1s ease',
-        userSelect: 'none',
+        width: '96px',
+        height: '96px',
+        imageRendering: 'pixelated',
+        transform: facingLeft ? 'scaleX(-1)' : 'none',
+        display: 'block',
       }}
-    >
-      {/* Cat body — pixel-art placeholder rectangle */}
-      <div
-        style={{
-          width: 80,
-          height: 80,
-          background: color,
-          borderRadius: animation === 'sleeping' ? '50% 50% 40% 40%' : '40% 40% 35% 35%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 13,
-          fontWeight: 700,
-          color: '#1a1a2e',
-          boxShadow: `0 4px 12px ${color}66`,
-          transform: `translateY(${bounce}px)`,
-          transition: 'transform 0.1s ease, background 0.3s ease',
-          position: 'relative',
-        }}
-      >
-        {/* Ears */}
-        <div style={{ position: 'absolute', top: -14, left: 10, width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: `16px solid ${color}` }} />
-        <div style={{ position: 'absolute', top: -14, right: 10, width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: `16px solid ${color}` }} />
-        {/* Face */}
-        <span style={{ fontSize: 10, color: '#1a1a2e', fontFamily: 'monospace', whiteSpace: 'nowrap', transform: `scaleX(${flipX})` }}>
-          {label}
-        </span>
-      </div>
-    </div>
+    />
   )
 }

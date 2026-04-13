@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 
-export function useMouseTracker(containerRef: React.RefObject<HTMLElement | null>) {
-  const [angle, setAngle] = useState(0)
-  const centerRef = useRef({ x: 0, y: 0 })
+/**
+ * Tracks mouse/touch position relative to the cat canvas element.
+ * Returns facingLeft = true when cursor is to the left of the container's center.
+ */
+export function useMouseTracker(containerRef: React.RefObject<HTMLElement | null>): boolean {
+  const [facingLeft, setFacingLeft] = useState(false)
+  const centerXRef = useRef(0)
 
   useEffect(() => {
     const el = containerRef.current
@@ -10,24 +14,19 @@ export function useMouseTracker(containerRef: React.RefObject<HTMLElement | null
 
     function updateCenter() {
       const rect = el!.getBoundingClientRect()
-      centerRef.current = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-      }
+      centerXRef.current = rect.left + rect.width / 2
     }
 
-    function handleMove(e: MouseEvent | Touch) {
-      const dx = e.clientX - centerRef.current.x
-      const dy = e.clientY - centerRef.current.y
-      setAngle(Math.atan2(dy, dx))
+    function handleMove(clientX: number) {
+      setFacingLeft(clientX < centerXRef.current)
     }
 
     function onMouseMove(e: MouseEvent) {
-      handleMove(e)
+      handleMove(e.clientX)
     }
 
     function onTouchMove(e: TouchEvent) {
-      if (e.touches.length > 0) handleMove(e.touches[0])
+      if (e.touches.length > 0) handleMove(e.touches[0].clientX)
     }
 
     updateCenter()
@@ -42,5 +41,5 @@ export function useMouseTracker(containerRef: React.RefObject<HTMLElement | null
     }
   }, [containerRef])
 
-  return angle
+  return facingLeft
 }

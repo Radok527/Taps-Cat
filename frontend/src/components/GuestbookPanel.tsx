@@ -4,8 +4,21 @@ import type { GuestbookEntry } from '../types'
 
 const MAX_MSG = 300
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--bg-tertiary)',
+  border: '1px solid var(--border-hover)',
+  borderRadius: 4,
+  color: 'var(--text-primary)',
+  fontSize: 11,
+  padding: '5px 8px',
+  marginBottom: 6,
+  outline: 'none',
+  fontFamily: "'Courier New', Courier, monospace",
+  boxSizing: 'border-box',
+}
+
 export function GuestbookPanel() {
-  const [isOpen, setIsOpen] = useState(false)
   const [entries, setEntries] = useState<GuestbookEntry[]>([])
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
@@ -17,11 +30,10 @@ export function GuestbookPanel() {
   }
 
   useEffect(() => {
-    if (!isOpen) return
     fetchEntries()
     const id = setInterval(fetchEntries, 30_000)
     return () => clearInterval(id)
-  }, [isOpen])
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -46,103 +58,93 @@ export function GuestbookPanel() {
   }
 
   return (
-    <div style={{ borderTop: '1px solid #2d3748' }}>
-      <button
-        onClick={() => setIsOpen((o) => !o)}
-        style={{
-          width: '100%',
-          padding: '8px 16px',
-          background: 'transparent',
-          border: 'none',
-          color: '#e0e0e0',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: 14,
-          fontWeight: 600,
-        }}
-      >
-        <span>📖 Gästebuch</span>
-        <span style={{ fontSize: 12, color: '#a0aec0' }}>{isOpen ? '▲' : '▼'}</span>
-      </button>
+    <div style={{ padding: '10px 12px 12px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Form */}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Name (optional)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={80}
+          style={inputStyle}
+        />
+        <div style={{ position: 'relative' }}>
+          <textarea
+            placeholder="Nachricht (max. 300 Zeichen) *"
+            value={message}
+            onChange={(e) => setMessage(e.target.value.slice(0, MAX_MSG))}
+            required
+            rows={3}
+            style={{
+              ...inputStyle,
+              resize: 'none',
+              marginBottom: 0,
+            }}
+          />
+          <span style={{
+            position: 'absolute',
+            bottom: 6,
+            right: 8,
+            fontSize: 9,
+            color: message.length >= MAX_MSG ? 'var(--danger)' : 'var(--text-hint)',
+          }}>
+            {message.length}/{MAX_MSG}
+          </span>
+        </div>
+        {error && (
+          <div style={{ color: 'var(--danger)', fontSize: 10, marginTop: 4, marginBottom: 4 }}>
+            {error}
+          </div>
+        )}
+        <button
+          type="submit"
+          disabled={submitting || !message.trim()}
+          style={{
+            width: '100%',
+            marginTop: 6,
+            padding: '6px',
+            background: 'transparent',
+            border: '1px solid var(--accent)',
+            borderRadius: 4,
+            color: submitting || !message.trim() ? 'var(--text-hint)' : 'var(--accent)',
+            cursor: submitting || !message.trim() ? 'not-allowed' : 'pointer',
+            fontSize: 10,
+            fontFamily: "'Courier New', Courier, monospace",
+            opacity: submitting || !message.trim() ? 0.5 : 1,
+          }}
+        >
+          {submitting ? 'Sende...' : 'Eintragen'}
+        </button>
+      </form>
 
-      {isOpen && (
-        <div style={{ padding: '0 12px 12px' }}>
-          {/* Form */}
-          <form onSubmit={handleSubmit} style={{ marginBottom: 12 }}>
-            <input
-              type="text"
-              placeholder="Name (optional)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={80}
-              style={inputStyle}
-            />
-            <div style={{ position: 'relative' }}>
-              <textarea
-                placeholder="Nachricht (max. 300 Zeichen) *"
-                value={message}
-                onChange={(e) => setMessage(e.target.value.slice(0, MAX_MSG))}
-                required
-                rows={3}
-                style={{ ...inputStyle, resize: 'none', width: '100%' }}
-              />
-              <span style={{ position: 'absolute', bottom: 6, right: 8, fontSize: 10, color: message.length >= MAX_MSG ? '#ef4444' : '#718096' }}>
-                {message.length}/{MAX_MSG}
+      {/* Entries */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {entries.length === 0 && (
+          <div style={{ color: 'var(--text-secondary)', fontSize: 10, textAlign: 'center', padding: '8px 0' }}>
+            Noch keine Einträge.
+          </div>
+        )}
+        {entries.map((e, i) => (
+          <div key={e.id} style={{
+            paddingTop: i > 0 ? 8 : 0,
+            marginTop: i > 0 ? 8 : 0,
+            borderTop: i > 0 ? '1px solid var(--bg-tertiary)' : 'none',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)' }}>
+                {e.name || 'Anonym'}
+              </span>
+              <span style={{ fontSize: 9, color: 'var(--text-hint)' }}>
+                {new Date(e.created_at).toLocaleDateString('de-DE')}
               </span>
             </div>
-            {error && <div style={{ color: '#ef4444', fontSize: 12, marginBottom: 6 }}>{error}</div>}
-            <button
-              type="submit"
-              disabled={submitting || !message.trim()}
-              style={{
-                width: '100%',
-                padding: '7px',
-                background: submitting || !message.trim() ? '#4a5568' : '#5ab4e5',
-                color: submitting || !message.trim() ? '#718096' : '#1a1a2e',
-                border: 'none',
-                borderRadius: 6,
-                cursor: submitting || !message.trim() ? 'not-allowed' : 'pointer',
-                fontWeight: 700,
-                fontSize: 13,
-              }}
-            >
-              {submitting ? 'Sende...' : 'Eintragen'}
-            </button>
-          </form>
-
-          {/* Entries */}
-          <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {entries.length === 0 && (
-              <div style={{ color: '#718096', fontSize: 12, textAlign: 'center' }}>Noch keine Einträge.</div>
-            )}
-            {entries.map((e) => (
-              <div key={e.id} style={{ background: '#2d3748', borderRadius: 8, padding: '8px 10px' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#5ab4e5', marginBottom: 3 }}>
-                  {e.name || 'Anonym'}
-                  <span style={{ color: '#718096', fontWeight: 400, marginLeft: 8 }}>{new Date(e.created_at).toLocaleDateString('de-DE')}</span>
-                </div>
-                <div style={{ fontSize: 13, color: '#e0e0e0', whiteSpace: 'pre-wrap' }}>{e.message}</div>
-              </div>
-            ))}
+            <div style={{ fontSize: 10, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>
+              {e.message}
+            </div>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   )
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: '#2d3748',
-  border: '1px solid #4a5568',
-  borderRadius: 6,
-  color: '#e0e0e0',
-  fontSize: 13,
-  padding: '6px 10px',
-  marginBottom: 6,
-  outline: 'none',
-  fontFamily: 'inherit',
-  boxSizing: 'border-box',
 }

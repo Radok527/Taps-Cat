@@ -14,7 +14,10 @@ COPY --from=builder /install /usr/local
 COPY . .
 
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh && chown -R appuser:appuser /app
+RUN chmod +x /entrypoint.sh \
+    && chown -R appuser:appuser /app \
+    && mkdir -p /images \
+    && chown appuser:appuser /images
 
 USER appuser
 

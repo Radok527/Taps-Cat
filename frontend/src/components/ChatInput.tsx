@@ -11,7 +11,7 @@ export function ChatInput() {
   const setMessagesLeft = useTamiStore((s) => s.setMessagesLeft)
   const setChallengeSolved = useTamiStore((s) => s.setChallengeSolved)
   const setAnimationOverride = useTamiStore((s) => s.setAnimationOverride)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const disabled = messagesLeft <= 0 || isChatLoading
 
@@ -41,59 +41,63 @@ export function ChatInput() {
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter') {
       e.preventDefault()
       handleSend()
     }
   }
 
-  if (messagesLeft <= 0) {
-    return (
-      <div style={{ padding: '8px 12px 12px', color: '#718096', fontSize: 13, textAlign: 'center' }}>
-        Komm morgen wieder! 🐱
-      </div>
-    )
-  }
-
   return (
-    <div style={{ padding: '0 12px 12px', display: 'flex', gap: 8 }}>
-      <textarea
+    <div style={{
+      padding: '6px 10px 8px',
+      borderTop: '1px solid var(--border)',
+      display: 'flex',
+      gap: 6,
+      alignItems: 'center',
+    }}>
+      <input
         ref={inputRef}
+        type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        placeholder="Schreib Tami..."
-        rows={2}
+        placeholder={messagesLeft <= 0 ? 'Komm morgen wieder! 🐱' : 'Schreib Taps...'}
         style={{
           flex: 1,
-          resize: 'none',
-          background: '#2d3748',
-          border: '1px solid #4a5568',
-          borderRadius: 8,
-          color: '#e0e0e0',
-          fontSize: 13,
-          padding: '6px 10px',
+          background: 'var(--bg-tertiary)',
+          border: '1px solid var(--border-hover)',
+          borderRadius: 4,
+          color: 'var(--text-primary)',
+          fontSize: 11,
+          padding: '4px 8px',
           outline: 'none',
-          fontFamily: 'inherit',
+          fontFamily: "'Courier New', Courier, monospace",
+          opacity: disabled ? 0.5 : 1,
         }}
       />
       <button
         onClick={handleSend}
         disabled={disabled || !text.trim()}
+        title="Senden"
         style={{
-          padding: '0 14px',
-          background: disabled || !text.trim() ? '#4a5568' : '#5ab4e5',
-          color: disabled || !text.trim() ? '#718096' : '#1a1a2e',
+          width: 26,
+          height: 26,
+          flexShrink: 0,
+          background: disabled || !text.trim() ? 'var(--text-hint)' : 'var(--accent)',
           border: 'none',
-          borderRadius: 8,
+          borderRadius: 4,
           cursor: disabled || !text.trim() ? 'not-allowed' : 'pointer',
-          fontWeight: 700,
-          fontSize: 18,
-          transition: 'background 0.2s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 0,
         }}
       >
-        ➤
+        {/* SVG arrow icon */}
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="#0d1117" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </button>
     </div>
   )
