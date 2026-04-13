@@ -119,4 +119,10 @@ See `.env.example`. Required: `MINIMAX_API_KEY`, `MINIMAX_GROUP_ID`. `ALLOWED_OR
 
 ## Implementation Status
 
-The backend scaffold, Phase 1 (cat state + interactions + scheduler + `GET /state`), and database migrations are implemented. Phases 2–7 (WebSocket, rate limiting, AI chat, challenge flow, guestbook, Docker hardening, and the entire frontend) are not yet built. Follow the phase order in `PLAN.md`.
+Phases 0–3 are complete:
+- **Phase 0** — Scaffolding (Docker Compose, Postgres, Redis, Alembic migrations, config)
+- **Phase 1** — Cat state core: `GET /state`, `POST /feed /play /pet`, hourly APScheduler drain
+- **Phase 2** — WebSocket `WS /ws`: Redis pub/sub fan-out, visitor count, real-time broadcast on all mutations
+- **Phase 3** — Rate limiting (`services/rate_limit.py`: atomic INCR+EXPIREAT) + per-IP session persistence (`services/session.py`)
+
+Phases 4–7 (AI chat, challenge flow, guestbook, frontend) are not yet built. Follow the phase order in `PLAN.md`.

@@ -124,8 +124,8 @@ Copy `.env.example` to `.env` and fill in the required values:
 
 - [x] Phase 0 — Scaffolding (Docker, Postgres, Redis, Alembic, config)
 - [x] Phase 1 — Cat state core (stats, interactions, hourly drain)
-- [ ] Phase 2 — WebSocket + Redis pub/sub fan-out
-- [ ] Phase 3 — Rate limiting + per-IP session management
+- [x] Phase 2 — WebSocket + Redis pub/sub fan-out
+- [x] Phase 3 — Rate limiting + per-IP session management
 - [ ] Phase 4 — AI chat (Minimax)
 - [ ] Phase 5 — Prompt injection challenge + image generation + leaderboard
 - [ ] Phase 6 — Guestbook

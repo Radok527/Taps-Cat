@@ -238,7 +238,7 @@ LPUSH on every interaction/guestbook post, LTRIM to 20. JSON entries: `{type, na
 
 ## 4. Backend Implementation Order
 
-### Phase 0 — Scaffolding
+### ✅ Phase 0 — Scaffolding
 1. `requirements.txt`: fastapi, uvicorn[standard], sqlalchemy[asyncio], asyncpg, alembic, redis[asyncio], pydantic-settings, httpx, python-multipart
 2. `app/config.py` — Settings from env: `DATABASE_URL`, `REDIS_URL`, `MINIMAX_API_KEY`, `MINIMAX_GROUP_ID`, `IMAGES_DIR`, `ALLOWED_ORIGINS`
 3. `app/database.py` — async SQLAlchemy engine
@@ -248,7 +248,7 @@ LPUSH on every interaction/guestbook post, LTRIM to 20. JSON entries: `{type, na
 7. Alembic init + first migration (all 5 tables)
 8. `docker-compose.yml` skeleton (postgres, redis)
 
-### Phase 1 — Cat State Core
+### ✅ Phase 1 — Cat State Core
 1. `app/services/cat_state.py` — `get_cat_state()`, `apply_delta(hunger_delta, happy_delta, action)`, clamp [5, 100]
 2. `app/scheduler.py` — APScheduler hourly job: hunger −3, happy −2, publish broadcast
 3. `GET /state` — returns `{hunger, happy, last_action, messages_left, images_left}`
@@ -257,14 +257,14 @@ LPUSH on every interaction/guestbook post, LTRIM to 20. JSON entries: `{type, na
 
 Deliverable: Persistent cat state, hourly drain, interactions work.
 
-### Phase 2 — WebSocket + Pub/Sub
+### ✅ Phase 2 — WebSocket + Pub/Sub
 1. `app/services/broadcast.py` — `publish_state(redis, state)` → publishes to `tami:broadcast`
 2. `WS /ws` — on connect: INCR visitor_count, send current state; subscribe pubsub; forward messages; on disconnect: DECR, unsubscribe, publish updated count
 3. Wire `publish_state` into scheduler + all interaction endpoints
 
 Deliverable: Real-time state sync across all browser tabs.
 
-### Phase 3 — Rate Limiting + Sessions
+### ✅ Phase 3 — Rate Limiting + Sessions
 1. `app/services/rate_limit.py` — atomic `check_and_increment_*` functions using pipeline INCR+EXPIREAT
 2. `app/services/session.py` — `load_session()`, `save_session()` with TTL refresh
 
