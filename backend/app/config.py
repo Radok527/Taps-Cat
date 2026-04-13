@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     MINIMAX_API_KEY: str = ""
     MINIMAX_GROUP_ID: str = ""
     IMAGES_DIR: str = "/images"
+    ADMIN_KEY: str = ""
     ALLOWED_ORIGINS: str = "http://localhost:5173"
 
     @property

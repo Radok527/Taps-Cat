@@ -1,9 +1,11 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.redis_client import init_redis, close_redis
@@ -12,6 +14,7 @@ from app.routers import state as state_router
 from app.routers import interactions as interactions_router
 from app.routers import websocket as websocket_router
 from app.routers import chat as chat_router
+from app.routers import leaderboard as leaderboard_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,6 +26,9 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Tami Cat backend…")
     redis = await init_redis()
     start_scheduler(redis)
+
+    # Ensure images directory exists before mounting StaticFiles
+    Path(settings.IMAGES_DIR).mkdir(parents=True, exist_ok=True)
 
     yield
 
@@ -53,3 +59,5 @@ app.include_router(state_router.router)
 app.include_router(interactions_router.router)
 app.include_router(websocket_router.router)
 app.include_router(chat_router.router)
+app.include_router(leaderboard_router.router)
+app.mount("/images", StaticFiles(directory=settings.IMAGES_DIR), name="images")

@@ -116,6 +116,7 @@ Copy `.env.example` to `.env` and fill in the required values:
 | `MINIMAX_API_KEY` | ✓ | Minimax API key |
 | `MINIMAX_GROUP_ID` | ✓ | Minimax group ID |
 | `IMAGES_DIR` | | Path for generated images (default: `/images`) |
+| `ADMIN_KEY` | | Secret for `DELETE /challenge/leaderboard/{id}` — set to any strong random string |
 | `ALLOWED_ORIGINS` | | CORS origins, comma-separated (default: `http://localhost:5173`) |
 
 ---
@@ -127,6 +128,6 @@ Copy `.env.example` to `.env` and fill in the required values:
 - [x] Phase 2 — WebSocket + Redis pub/sub fan-out
 - [x] Phase 3 — Rate limiting + per-IP session management
 - [x] Phase 4 — AI chat (Minimax)
-- [ ] Phase 5 — Prompt injection challenge + image generation + leaderboard
+- [x] Phase 5 — Prompt injection challenge + image generation + leaderboard
 - [ ] Phase 6 — Guestbook
 - [ ] Phase 7 — React frontend + Nginx + production deploy

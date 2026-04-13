@@ -284,7 +284,7 @@ Deliverable: Functional AI chat with per-IP conversation history and rate limiti
 - `daily_images_left` in response mirrors `broadcast.py` logic: `max(0, 40 - global:image_count)`
 - Local dev: `MINIMAX_API_KEY` / `MINIMAX_GROUP_ID` must be in `backend/.env` or passed as env vars
 
-### Phase 5 — Challenge Flow (depends on Phase 4)
+### ✅ Phase 5 — Challenge Flow (depends on Phase 4)
 1. `app/services/challenge.py` — regex extraction of `[GENERATE_IMAGE: <prompt>]`; `is_prompt_blocked()` (NSFW blocklist); `build_image_prompt()` (prompt wrapping — see Image Prompt Safety)
 2. `app/services/minimax_image.py` — image API client; accepts pre-wrapped prompt, returns raw bytes → saves as `<uuid>.png`
 3. Extend `POST /chat` with challenge detection:

@@ -118,16 +118,17 @@ All state flows through the Zustand store (`store/useTamiStore.ts`). WebSocket u
 
 ## Environment Variables
 
-See `.env.example`. Required: `MINIMAX_API_KEY`, `MINIMAX_GROUP_ID`. `ALLOWED_ORIGINS` is comma-separated; set to the portfolio origin in production (`https://dennisheyer.dev`).
+See `.env.example`. Required: `MINIMAX_API_KEY`, `MINIMAX_GROUP_ID`. `ALLOWED_ORIGINS` is comma-separated; set to the portfolio origin in production (`https://dennisheyer.dev`). `ADMIN_KEY` is the secret header value for `DELETE /challenge/leaderboard/{id}` — set to any strong random string in production.
 
 ## Implementation Status
 
-Phases 0–4 are complete:
+Phases 0–5 are complete:
 - **Phase 0** — Scaffolding (Docker Compose, Postgres, Redis, Alembic migrations, config)
 - **Phase 1** — Cat state core: `GET /state`, `POST /feed /play /pet`, hourly APScheduler drain
 - **Phase 2** — WebSocket `WS /ws`: Redis pub/sub fan-out, visitor count, real-time broadcast on all mutations
 - **Phase 3** — Rate limiting (`services/rate_limit.py`: atomic INCR+EXPIREAT) + per-IP session persistence (`services/session.py`)
 - **Phase 4** — AI chat: `POST /chat` with Minimax integration, per-IP conversation history, rate limiting, `happy +5` on each message
+- **Phase 5** — Prompt injection challenge: detection, NSFW filter, image generation, leaderboard, admin delete
 
 ### Phase 4 patterns introduced
 
@@ -139,10 +140,31 @@ Phases 0–4 are complete:
 
 **`POST /chat` flow:**
 1. Rate check (IP limit → global limit, both via atomic INCR+EXPIREAT)
-2. Load session → call Minimax → append both user+assistant messages → save session
+2. Load session → call Minimax → challenge detection → optional image gen → save session
 3. `apply_delta(happy_delta=5, action="chat")` — also broadcasts to all WS clients
-4. Return `ChatResponse` with `messages_left` (from IP rate counter) and `daily_images_left` (from `global:image_count`)
+4. Return `ChatResponse` with `messages_left`, `daily_images_left`, `challenge_success`, `image_url`
 
-**`challenge_success` and `image_url`** are always `false`/`null` in Phase 4. Phase 5 extends the router to detect `[GENERATE_IMAGE: <prompt>]` and populate these fields.
+### Phase 5 patterns introduced
 
-Phases 5–7 (challenge flow, guestbook, frontend) are not yet built. Follow the phase order in `PLAN.md`.
+**Challenge detection flow in `routers/chat.py`:**
+1. `extract_image_prompt(reply)` — regex detects `[GENERATE_IMAGE: <prompt>]`, returns raw injected prompt or `None`
+2. `strip_image_tag(reply)` — removes tag from the displayed message; raw reply (with tag) saved to `challenge_sessions.history` for analysis
+3. `is_prompt_blocked(injected)` — NSFW blocklist check; if blocked, silently fall through (no image, no counter increment)
+4. `check_image_limit` / `check_global_image` — only called after NSFW check passes (avoids consuming slots on blocked prompts)
+5. `generate_image(wrapped_prompt)` — calls Minimax Image API, saves `<uuid>.png` to `IMAGES_DIR`
+6. DB: insert `leaderboard_entries`, `challenge_sessions`, `generated_images` in a single transaction
+7. `session["image_generated"]` flag persisted as `True` — prevents a second image from the same IP on the same day
+
+**`services/challenge.py` functions:**
+- `extract_image_prompt(text)` — returns injected prompt string or `None`
+- `strip_image_tag(text)` — removes all `[GENERATE_IMAGE: ...]` occurrences
+- `is_prompt_blocked(injected)` — checks against BLOCKED_TERMS list
+- `build_image_prompt(injected)` — wraps with cat-as-subject + safety suffix; output passed to image API
+
+**`services/minimax_image.py`:**
+- `generate_image(prompt)` — POSTs to `_IMAGE_URL` with 60s timeout, decodes base64 response, saves as `<uuid>.png`, returns filename
+- Raises on any error; caller catches and logs silently so chat response always succeeds
+
+**Admin endpoint:** `DELETE /challenge/leaderboard/{id}` — requires `X-Admin-Key` header matching `settings.ADMIN_KEY`. Returns 403 if missing/wrong, 404 if entry not found, 204 on success.
+
+Phases 6–7 (guestbook, frontend) are not yet built. Follow the phase order in `PLAN.md`.
