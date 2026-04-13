@@ -185,3 +185,29 @@ Phase 7 (frontend) is not yet built. Follow the phase order in `PLAN.md`.
 
 **`DELETE /guestbook/{id}`** — admin delete.
 - Requires `X-Admin-Key` header matching `settings.ADMIN_KEY`. Returns 403 if missing/wrong, 404 if not found, 204 on success. Same pattern as `DELETE /challenge/leaderboard/{id}`.
+
+### Phase 7 patterns introduced
+
+**Nginx routing (`nginx/nginx.conf`):**
+- `location /api/` → `proxy_pass http://api:8000/` — strips `/api` prefix before forwarding to FastAPI
+- `location /ws` — WebSocket upgrade proxy (sets `Upgrade` + `Connection` headers, 86400s read timeout)
+- `location /images/` → `alias /images/` — serves the shared Docker `images` volume directly
+- `location /` → `proxy_pass http://frontend:80/` — forwards to the frontend nginx serving the React build
+
+**Multi-stage Dockerfiles:**
+- `backend/Dockerfile` — builder stage installs deps into `/install`; final stage uses non-root `appuser`
+- `frontend/Dockerfile` — builder stage runs `npm ci && npm run build`; final stage copies `/app/dist` into `nginx:alpine`
+
+**`entrypoint.sh` migrate-then-start pattern:**
+- Backend container runs `alembic upgrade head` before starting uvicorn, ensuring migrations always run on deploy
+
+**Frontend architecture:**
+- Zustand store (`src/store/useTamiStore.ts`) holds all shared state; components read slices via selectors
+- `ws.ts` manages a single WebSocket with exponential backoff (1s → 30s cap) and 20s ping/pong keep-alive
+- `useWebSocket` hook wires `ws.ts` to the Zustand store; on reconnect calls `GET /api/state` to fill gaps
+- `animationOverrideUntil` pattern — interaction handlers call `setAnimationOverride(anim, Date.now() + 2000)`, which takes priority over WS-derived state until the timestamp expires; `useAnimationState` checks this before deriving animation from hunger/happy values
+
+**`docker-compose.yml` services:**
+- `api` — backend, no exposed ports (internal only)
+- `frontend` — React static build served by nginx:alpine, no exposed ports
+- `nginx` — reverse proxy on port 80, mounts `images` volume alongside `api`

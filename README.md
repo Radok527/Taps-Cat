@@ -53,16 +53,18 @@ cd tami-cat
 cp .env.example .env
 # → fill in MINIMAX_API_KEY and MINIMAX_GROUP_ID in .env
 
-# 2. Start
-docker compose up -d
+# 2. Build and start the full stack (backend + frontend + nginx)
+docker compose up --build -d
 
 # 3. Verify
-curl http://localhost:8000/state
+curl http://localhost/api/state
 ```
 
 ```json
 {"hunger": 70, "happy": 70, "last_action": "idle", "messages_left": 15, "images_left": 40}
 ```
+
+The widget is then available at **http://localhost**.
 
 Alembic migrations run automatically on container start.
 
@@ -70,16 +72,18 @@ Alembic migrations run automatically on container start.
 
 ## API
 
+All endpoints are served through nginx at `/api/...`:
+
 ```
-GET  /state                  Cat stats + remaining rate limits
-POST /feed                   Hunger +20
-POST /play                   Happiness +20
-POST /pet                    Happiness +10
-POST /chat                   Chat with Tami (AI, 15 msg/IP/day)
-WS   /ws                     Live state stream
-GET  /guestbook              Paginated entries
-POST /guestbook              Post a message (max 2/IP/day)
-GET  /challenge/leaderboard  Prompt injection winners
+GET  /api/state                  Cat stats + remaining rate limits
+POST /api/feed                   Hunger +20
+POST /api/play                   Happiness +20
+POST /api/pet                    Happiness +10
+POST /api/chat                   Chat with Tami (AI, 15 msg/IP/day)
+WS   /ws                         Live state stream
+GET  /api/guestbook              Paginated entries
+POST /api/guestbook              Post a message (max 2/IP/day)
+GET  /api/challenge/leaderboard  Prompt injection winners
 ```
 
 ---
@@ -130,4 +134,4 @@ Copy `.env.example` to `.env` and fill in the required values:
 - [x] Phase 4 — AI chat (Minimax)
 - [x] Phase 5 — Prompt injection challenge + image generation + leaderboard
 - [x] Phase 6 — Guestbook
-- [ ] Phase 7 — React frontend + Nginx + production deploy
+- [x] Phase 7 — React frontend + Nginx + production deploy

@@ -300,7 +300,7 @@ Deliverable: Full Easter egg flow with leaderboard.
 1. `GET /guestbook` (paginated), `POST /guestbook` (rate-limited 2/IP/day)
 2. Push to `feed:recent` Redis list on each post
 
-### Phase 7 — Hardening + Docker
+### ✅ Phase 7 — Hardening + Docker + React Frontend
 1. CORS middleware, global exception handler, request ID middleware
 2. Multi-stage `Dockerfile` for backend (non-root user)
 3. Complete `docker-compose.yml`: api, frontend, postgres (volume), redis (volume), nginx

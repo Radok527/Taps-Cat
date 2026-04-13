@@ -30,8 +30,6 @@ services:
   api:
     build: ./backend
     env_file: .env
-    ports:
-      - "8000:8000"
     volumes:
       - images:/images
     depends_on:
@@ -39,6 +37,21 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - images:/images
+    depends_on:
+      - api
+      - frontend
     restart: unless-stopped
 
 volumes:
