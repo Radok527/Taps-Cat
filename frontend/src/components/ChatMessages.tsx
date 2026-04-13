@@ -10,14 +10,15 @@ function formatTime(iso: string) {
 export function ChatMessages() {
   const chatHistory = useTamiStore((s) => s.chatHistory)
   const isChatLoading = useTamiStore((s) => s.isChatLoading)
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const el = containerRef.current
+    if (el) el.scrollTop = el.scrollHeight
   }, [chatHistory, isChatLoading])
 
   return (
-    <div style={{
+    <div ref={containerRef} style={{
       maxHeight: 130,
       overflowY: 'auto',
       padding: '8px 10px',
@@ -83,7 +84,6 @@ export function ChatMessages() {
           </div>
         </div>
       )}
-      <div ref={bottomRef} />
     </div>
   )
 }
