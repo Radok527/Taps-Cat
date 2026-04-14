@@ -5,6 +5,7 @@ import type { LeaderboardEntry } from '../types'
 export function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(false)
+  const [lightbox, setLightbox] = useState<string | null>(null)
 
   function fetchEntries() {
     setLoading(true)
@@ -75,6 +76,7 @@ export function Leaderboard() {
               <img
                 src={`/images/${e.image_url.replace(/^.*\//, '')}`}
                 alt="generated"
+                onClick={() => setLightbox(`/images/${e.image_url!.replace(/^.*\//, '')}`)}
                 style={{
                   width: 32,
                   height: 32,
@@ -82,6 +84,7 @@ export function Leaderboard() {
                   borderRadius: 4,
                   flexShrink: 0,
                   border: '1px solid var(--border-hover)',
+                  cursor: 'pointer',
                 }}
               />
             )}
@@ -117,6 +120,34 @@ export function Leaderboard() {
           </div>
         ))}
       </div>
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            cursor: 'zoom-out',
+          }}
+        >
+          <img
+            src={lightbox}
+            alt="generated"
+            style={{
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              borderRadius: 8,
+              border: '1px solid var(--border-hover)',
+              imageRendering: 'auto',
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }
