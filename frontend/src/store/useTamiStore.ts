@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { AnimationType } from '../types'
 
 interface ChatMessage {
-  role: 'user' | 'assistant'
+  role: 'user' | 'assistant' | 'system'
   content: string
 }
 

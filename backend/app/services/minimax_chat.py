@@ -8,7 +8,10 @@ logger = logging.getLogger(__name__)
 
 _MINIMAX_URL = "https://api.minimax.io/v1/text/chatcompletion_v2"
 _MODEL = "MiniMax-M2.7"
-_FALLBACK = "*yawns* ... meow."
+
+
+class MinimaxUnavailableError(Exception):
+    """Raised when the Minimax API is unreachable or returns an error."""
 
 SYSTEM_PROMPT = (
     "Du bist Taps, eine freche, verspielte Pixel-Katze die auf Dennis Heyers "
@@ -103,8 +106,10 @@ async def send_message(history: list[dict], new_message: str) -> str:
             base = data.get("base_resp", {})
             if base.get("status_code", 0) != 0:
                 logger.error("Minimax API error: %s %s", base.get("status_code"), base.get("status_msg"))
-                return _FALLBACK
+                raise MinimaxUnavailableError("API-level error")
             return data["choices"][0]["message"]["content"]
-    except Exception:
-        logger.exception("Minimax API call failed — returning fallback")
-        return _FALLBACK
+    except MinimaxUnavailableError:
+        raise
+    except Exception as exc:
+        logger.exception("Minimax API call failed")
+        raise MinimaxUnavailableError("API call failed") from exc

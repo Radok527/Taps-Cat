@@ -32,8 +32,16 @@ export function ChatInput() {
       } else {
         setAnimationOverride('happy', Date.now() + 2000)
       }
-    } catch {
-      addChatMessage({ role: 'assistant', content: '*yawns* ... meow.' })
+    } catch (err) {
+      const status = (err as Error & { status?: number }).status
+      if (status === 503) {
+        addChatMessage({
+          role: 'system',
+          content: '⚠️ KI gerade nicht erreichbar — dein Versuch wurde nicht gezählt. Versuch es gleich nochmal!',
+        })
+      } else {
+        addChatMessage({ role: 'system', content: '⚠️ Verbindungsfehler — bitte versuch es erneut.' })
+      }
     } finally {
       setChatLoading(false)
       inputRef.current?.focus()

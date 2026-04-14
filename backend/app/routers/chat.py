@@ -16,7 +16,7 @@ from app.services.challenge import (
     is_prompt_blocked,
     strip_image_tag,
 )
-from app.services.minimax_chat import send_message
+from app.services.minimax_chat import MinimaxUnavailableError, send_message
 from app.services.minimax_image import generate_image
 from app.services.rate_limit import (
     check_chat_limit,
@@ -65,7 +65,13 @@ async def chat(
 
     # --- Minimax call ---
     # history passed here does NOT yet include the new message
-    reply = await send_message(history, body.message)
+    try:
+        reply = await send_message(history, body.message)
+    except MinimaxUnavailableError:
+        raise HTTPException(
+            status_code=503,
+            detail="Taps schläft gerade... die KI ist kurz nicht erreichbar. Dein Versuch wurde nicht gezählt!",
+        )
 
     # --- Challenge detection ---
     # Extract the injected prompt (if any) and strip the tag from the displayed reply.

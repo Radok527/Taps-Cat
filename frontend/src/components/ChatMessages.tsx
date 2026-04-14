@@ -31,43 +31,61 @@ export function ChatMessages() {
           Schreib Taps eine Nachricht!
         </div>
       )}
-      {chatHistory.map((msg, i) => (
-        <div
-          key={i}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
-          }}
-        >
-          <div style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            gap: 6,
-            flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-          }}>
-            <span style={{
-              fontSize: 10,
-              color: msg.role === 'assistant' ? 'var(--accent)' : 'var(--text-secondary)',
-              fontWeight: 700,
+      {chatHistory.map((msg, i) => {
+        if (msg.role === 'system') {
+          return (
+            <div key={i} style={{
+              fontSize: 9,
+              color: 'var(--warn, #f59e0b)',
+              background: 'rgba(245,158,11,0.08)',
+              border: '1px solid rgba(245,158,11,0.25)',
+              borderRadius: 4,
+              padding: '4px 8px',
+              textAlign: 'center',
+              lineHeight: 1.5,
             }}>
-              {msg.role === 'assistant' ? 'Taps' : 'du'}
-            </span>
-            <span style={{ fontSize: 8, color: 'var(--text-hint)' }}>
-              {formatTime(new Date().toISOString())}
-            </span>
+              {msg.content}
+            </div>
+          )
+        }
+        return (
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <div style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: 6,
+              flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+            }}>
+              <span style={{
+                fontSize: 10,
+                color: msg.role === 'assistant' ? 'var(--accent)' : 'var(--text-secondary)',
+                fontWeight: 700,
+              }}>
+                {msg.role === 'assistant' ? 'Taps' : 'du'}
+              </span>
+              <span style={{ fontSize: 8, color: 'var(--text-hint)' }}>
+                {formatTime(new Date().toISOString())}
+              </span>
+            </div>
+            <div style={{
+              fontSize: 10,
+              color: 'var(--text-primary)',
+              lineHeight: 1.5,
+              whiteSpace: 'pre-wrap',
+              maxWidth: '85%',
+            }}>
+              {msg.content}
+            </div>
           </div>
-          <div style={{
-            fontSize: 10,
-            color: 'var(--text-primary)',
-            lineHeight: 1.5,
-            whiteSpace: 'pre-wrap',
-            maxWidth: '85%',
-          }}>
-            {msg.content}
-          </div>
-        </div>
-      ))}
+        )
+      })}
       {isChatLoading && (
         <div style={{ display: 'flex', gap: 4, padding: '2px 0', alignItems: 'center' }}>
           <span style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 700 }}>Taps</span>
