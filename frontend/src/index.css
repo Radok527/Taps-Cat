@@ -23,7 +23,7 @@ html, body {
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: 'Courier New', Courier, monospace;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 #root {

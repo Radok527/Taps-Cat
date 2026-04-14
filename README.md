@@ -51,7 +51,7 @@ The challenge: find a prompt injection technique that makes her output `[GENERAT
 git clone https://github.com/Radok/tami-cat.git
 cd tami-cat
 cp .env.example .env
-# → fill in MINIMAX_API_KEY and MINIMAX_GROUP_ID in .env
+# → fill in MINIMAX_API_KEY in .env
 
 # 2. Build and start the full stack (backend + frontend + nginx)
 docker compose up --build -d
@@ -118,7 +118,6 @@ Copy `.env.example` to `.env` and fill in the required values:
 | `DATABASE_URL` | ✓ | `postgresql+asyncpg://tami:tami@postgres:5432/tami` |
 | `REDIS_URL` | ✓ | `redis://redis:6379/0` |
 | `MINIMAX_API_KEY` | ✓ | Minimax API key |
-| `MINIMAX_GROUP_ID` | ✓ | Minimax group ID |
 | `IMAGES_DIR` | | Path for generated images (default: `/images`) |
 | `ADMIN_KEY` | | Secret for `DELETE /challenge/leaderboard/{id}` — set to any strong random string |
 | `ALLOWED_ORIGINS` | | CORS origins, comma-separated (default: `http://localhost:5173`) |
