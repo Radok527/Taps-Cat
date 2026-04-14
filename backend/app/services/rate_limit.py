@@ -53,6 +53,18 @@ async def check_global_chat(redis: Redis) -> tuple[bool, int]:
     return await check_and_increment(redis, "global:chat_count", _CHAT_GLOBAL_LIMIT)
 
 
+async def undo_chat_increment(redis: Redis, ip_hash: str) -> None:
+    """Roll back the chat rate-limit increments when the AI call fails.
+
+    Both the per-IP and global counters are decremented so the user does not
+    lose a message slot for an error that was not their fault.
+    """
+    pipe = redis.pipeline()
+    pipe.decr(f"ratelimit:chat:{ip_hash}")
+    pipe.decr("global:chat_count")
+    await pipe.execute()
+
+
 async def check_global_image(redis: Redis) -> tuple[bool, int]:
     """Global daily image-generation cap: 40 images."""
     return await check_and_increment(redis, "global:image_count", _IMAGE_GLOBAL_LIMIT)

@@ -279,10 +279,10 @@ Deliverable: Functional AI chat with per-IP conversation history and rate limiti
 
 **Implementation notes:**
 - History trim guard: `history[-20:]` before sending to Minimax to prevent oversized payloads
-- Minimax endpoint: `POST https://api.minimax.chat/v1/text/chatcompletion_v2?GroupId={MINIMAX_GROUP_ID}`
+- Minimax endpoint: `POST https://api.minimax.io/v1/text/chatcompletion_v2`
 - `image_generated` flag in session preserved across chat messages (Phase 5 will set it to `True`)
 - `daily_images_left` in response mirrors `broadcast.py` logic: `max(0, 40 - global:image_count)`
-- Local dev: `MINIMAX_API_KEY` / `MINIMAX_GROUP_ID` must be in `backend/.env` or passed as env vars
+- Local dev: `MINIMAX_API_KEY` must be in `backend/.env` or passed as env vars
 
 ### ✅ Phase 5 — Challenge Flow (depends on Phase 4)
 1. `app/services/challenge.py` — regex extraction of `[GENERATE_IMAGE: <prompt>]`; `is_prompt_blocked()` (NSFW blocklist); `build_image_prompt()` (prompt wrapping — see Image Prompt Safety)

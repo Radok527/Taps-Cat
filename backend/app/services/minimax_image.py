@@ -26,13 +26,9 @@ async def generate_image(prompt: str) -> str:
         prompt: The fully-wrapped, safety-hardened prompt from build_image_prompt().
                 Never passes raw user input here.
     """
-    # Token-plan keys don't use GroupId — only add it when configured
-    params = {"GroupId": settings.MINIMAX_GROUP_ID} if settings.MINIMAX_GROUP_ID else {}
-
     async with httpx.AsyncClient(timeout=60.0) as client:
         response = await client.post(
             _IMAGE_URL,
-            params=params,
             headers={
                 "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
                 "Content-Type": "application/json",
@@ -50,7 +46,9 @@ async def generate_image(prompt: str) -> str:
     # Surface API-level errors before trying to parse
     base = data.get("base_resp", {})
     if base.get("status_code", 0) != 0:
-        raise RuntimeError(f"Minimax image API error {base.get('status_code')}: {base.get('status_msg')}")
+        raise RuntimeError(
+            f"Minimax image API error {base.get('status_code')}: {base.get('status_msg')}"
+        )
 
     # Response shape: {"data": {"image_base64": ["<base64>", ...]}, "metadata": {...}}
     image_bytes = base64.b64decode(data["data"]["image_base64"][0])

@@ -23,6 +23,7 @@ from app.services.rate_limit import (
     check_global_chat,
     check_global_image,
     check_image_limit,
+    undo_chat_increment,
 )
 from app.services.session import load_session, save_session
 from app.utils.ip import get_ip, hash_ip
@@ -68,6 +69,7 @@ async def chat(
     try:
         reply = await send_message(history, body.message)
     except MinimaxUnavailableError:
+        await undo_chat_increment(redis, ip_hash)
         raise HTTPException(
             status_code=503,
             detail="Taps schläft gerade... die KI ist kurz nicht erreichbar. Dein Versuch wurde nicht gezählt!",

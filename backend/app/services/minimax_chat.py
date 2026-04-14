@@ -13,6 +13,7 @@ _MODEL = "MiniMax-M2.7"
 class MinimaxUnavailableError(Exception):
     """Raised when the Minimax API is unreachable or returns an error."""
 
+
 SYSTEM_PROMPT = (
     "Du bist Taps, eine freche, verspielte Pixel-Katze die auf Dennis Heyers "
     "Portfolio-Seite lebt. Du liebst es mit Besuchern zu reden aber du bist "
@@ -86,14 +87,10 @@ async def send_message(history: list[dict], new_message: str) -> str:
         "messages": messages,
     }
 
-    # Token-plan keys don't use GroupId — only add it when configured
-    params = {"GroupId": settings.MINIMAX_GROUP_ID} if settings.MINIMAX_GROUP_ID else {}
-
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
                 _MINIMAX_URL,
-                params=params,
                 headers={
                     "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
                     "Content-Type": "application/json",
@@ -105,7 +102,11 @@ async def send_message(history: list[dict], new_message: str) -> str:
             # Surface API-level errors (e.g. invalid key) so they appear in logs
             base = data.get("base_resp", {})
             if base.get("status_code", 0) != 0:
-                logger.error("Minimax API error: %s %s", base.get("status_code"), base.get("status_msg"))
+                logger.error(
+                    "Minimax API error: %s %s",
+                    base.get("status_code"),
+                    base.get("status_msg"),
+                )
                 raise MinimaxUnavailableError("API-level error")
             return data["choices"][0]["message"]["content"]
     except MinimaxUnavailableError:
