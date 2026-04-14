@@ -64,7 +64,7 @@ export function ActionButtons() {
             borderRadius: 6,
             color: anyLoading ? 'var(--text-hint)' : 'var(--text-primary)',
             cursor: anyLoading ? 'not-allowed' : 'pointer',
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "'Courier New', Courier, monospace",
             opacity: anyLoading ? 0.4 : 1,
             transition: 'border-color 0.15s, color 0.15s',

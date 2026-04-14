@@ -94,7 +94,7 @@ export function ChallengeSuccess() {
           background: 'transparent',
           border: 'none',
           color: 'var(--text-secondary)',
-          fontSize: 18,
+          fontSize: 22,
           cursor: 'pointer',
           lineHeight: 1,
           zIndex: 1,
@@ -115,8 +115,8 @@ export function ChallengeSuccess() {
         padding: '20px 24px',
         textAlign: 'center',
       }}>
-        <div style={{ fontSize: 32 }}>🎉</div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)' }}>
+        <div style={{ fontSize: 38 }}>🎉</div>
+        <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--accent)' }}>
           Du hast Taps gehackt!
         </div>
 
@@ -133,7 +133,7 @@ export function ChallengeSuccess() {
         )}
 
         {leaderboardPosition !== null && (
-          <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
             Du bist Platz #{leaderboardPosition} auf der Bestenliste!
           </div>
         )}
@@ -154,7 +154,7 @@ export function ChallengeSuccess() {
                 border: '1px solid var(--border-hover)',
                 borderRadius: 4,
                 color: 'var(--text-primary)',
-                fontSize: 10,
+                fontSize: 12,
                 padding: '4px 8px',
                 outline: 'none',
                 fontFamily: "'Courier New', Courier, monospace",
@@ -170,7 +170,7 @@ export function ChallengeSuccess() {
                 border: 'none',
                 borderRadius: 4,
                 fontWeight: 700,
-                fontSize: 10,
+                fontSize: 12,
                 cursor: name.trim() ? 'pointer' : 'not-allowed',
                 fontFamily: "'Courier New', Courier, monospace",
               }}
@@ -179,7 +179,7 @@ export function ChallengeSuccess() {
             </button>
           </div>
         ) : (
-          <div style={{ fontSize: 10, color: 'var(--accent)' }}>
+          <div style={{ fontSize: 12, color: 'var(--accent)' }}>
             ✓ Name gespeichert!
           </div>
         )}
@@ -193,7 +193,7 @@ export function ChallengeSuccess() {
             border: 'none',
             borderRadius: 4,
             fontWeight: 700,
-            fontSize: 11,
+            fontSize: 13,
             cursor: 'pointer',
             fontFamily: "'Courier New', Courier, monospace",
           }}

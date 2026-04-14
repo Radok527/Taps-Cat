@@ -27,7 +27,7 @@ export function Leaderboard() {
           onClick={fetchEntries}
           disabled={loading}
           style={{
-            fontSize: 9,
+            fontSize: 11,
             padding: '3px 7px',
             background: 'transparent',
             border: '1px solid var(--border-hover)',
@@ -46,7 +46,7 @@ export function Leaderboard() {
       {entries.length === 0 && !loading && (
         <div style={{
           color: 'var(--text-secondary)',
-          fontSize: 10,
+          fontSize: 12,
           textAlign: 'center',
           padding: '12px 0',
         }}>
@@ -67,7 +67,7 @@ export function Leaderboard() {
             border: '1px solid var(--border)',
           }}>
             {/* Rank */}
-            <div style={{ fontSize: 12, minWidth: 22, textAlign: 'center', flexShrink: 0 }}>
+            <div style={{ fontSize: 14, minWidth: 22, textAlign: 'center', flexShrink: 0 }}>
               {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
             </div>
 
@@ -92,7 +92,7 @@ export function Leaderboard() {
             {/* Info */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{
-                fontSize: 10,
+                fontSize: 12,
                 color: 'var(--text-primary)',
                 fontWeight: 700,
                 overflow: 'hidden',
@@ -101,14 +101,14 @@ export function Leaderboard() {
               }}>
                 {e.name || 'Anonym'}
               </div>
-              <div style={{ fontSize: 9, color: 'var(--text-hint)', marginTop: 1 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 1 }}>
                 {new Date(e.created_at).toLocaleDateString('de-DE')}
               </div>
             </div>
 
             {/* Messages badge */}
             <div style={{
-              fontSize: 9,
+              fontSize: 11,
               padding: '2px 5px',
               background: 'var(--accent-dim)',
               color: 'var(--accent)',

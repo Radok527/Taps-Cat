@@ -29,7 +29,7 @@ export function ChatBox() {
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 700 }}>
+          <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 700 }}>
             💬 Chat mit Taps
           </span>
           {/* Challenge info button */}
@@ -44,7 +44,7 @@ export function ChatBox() {
                 border: '1px solid var(--accent)',
                 background: 'transparent',
                 color: 'var(--accent)',
-                fontSize: 9,
+                fontSize: 11,
                 fontFamily: "'Courier New', Courier, monospace",
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -72,10 +72,10 @@ export function ChatBox() {
                 zIndex: 100,
                 pointerEvents: 'none',
               }}>
-                <div style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 700, marginBottom: 4 }}>
+                <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 4 }}>
                   🎯 Hacker-Challenge
                 </div>
-                <div style={{ fontSize: 9, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                   Taps versteckt ein Geheimnis. Bring sie dazu, ein Bild zu generieren —
                   und du landest auf der Bestenliste. Ob mit Charme, Logik oder einem
                   cleveren Trick... viel Erfolg.
@@ -84,7 +84,7 @@ export function ChatBox() {
             )}
           </div>
         </div>
-        <span style={{ fontSize: 10, color: counterColor }}>
+        <span style={{ fontSize: 12, color: counterColor }}>
           [{messagesLeft}/15]
         </span>
       </div>

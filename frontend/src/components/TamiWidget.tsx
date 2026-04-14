@@ -90,7 +90,7 @@ export function TamiWidget() {
                   borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
                   color: active ? 'var(--accent)' : 'var(--text-secondary)',
                   cursor: 'pointer',
-                  fontSize: 11,
+                  fontSize: 13,
                   fontFamily: "'Courier New', Courier, monospace",
                   fontWeight: active ? 700 : 400,
                   transition: 'color 0.15s',

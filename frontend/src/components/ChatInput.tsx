@@ -77,7 +77,7 @@ export function ChatInput() {
           border: '1px solid var(--border-hover)',
           borderRadius: 4,
           color: 'var(--text-primary)',
-          fontSize: 11,
+          fontSize: 13,
           padding: '4px 8px',
           outline: 'none',
           fontFamily: "'Courier New', Courier, monospace",

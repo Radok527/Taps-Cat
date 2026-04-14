@@ -15,7 +15,7 @@ function Bar({ label, value }: BarProps) {
   const color = barColor(value)
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-      <span style={{ width: 48, fontSize: 10, color: 'var(--text-secondary)', flexShrink: 0 }}>
+      <span style={{ width: 48, fontSize: 12, color: 'var(--text-secondary)', flexShrink: 0 }}>
         {label}
       </span>
       <div style={{
@@ -35,7 +35,7 @@ function Bar({ label, value }: BarProps) {
       </div>
       <span style={{
         width: 24,
-        fontSize: 10,
+        fontSize: 12,
         color,
         textAlign: 'right',
         flexShrink: 0,

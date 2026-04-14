@@ -11,7 +11,7 @@ export function VisitorCount() {
       display: 'flex',
       alignItems: 'center',
       gap: 4,
-      fontSize: 9,
+      fontSize: 11,
       color: 'var(--accent)',
     }}>
       <div style={{

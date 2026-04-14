@@ -10,7 +10,7 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid var(--border-hover)',
   borderRadius: 4,
   color: 'var(--text-primary)',
-  fontSize: 11,
+  fontSize: 13,
   padding: '5px 8px',
   marginBottom: 6,
   outline: 'none',
@@ -86,14 +86,14 @@ export function GuestbookPanel() {
             position: 'absolute',
             bottom: 6,
             right: 8,
-            fontSize: 9,
+            fontSize: 11,
             color: message.length >= MAX_MSG ? 'var(--danger)' : 'var(--text-hint)',
           }}>
             {message.length}/{MAX_MSG}
           </span>
         </div>
         {error && (
-          <div style={{ color: 'var(--danger)', fontSize: 10, marginTop: 4, marginBottom: 4 }}>
+          <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 4, marginBottom: 4 }}>
             {error}
           </div>
         )}
@@ -109,7 +109,7 @@ export function GuestbookPanel() {
             borderRadius: 4,
             color: submitting || !message.trim() ? 'var(--text-hint)' : 'var(--accent)',
             cursor: submitting || !message.trim() ? 'not-allowed' : 'pointer',
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "'Courier New', Courier, monospace",
             opacity: submitting || !message.trim() ? 0.5 : 1,
           }}
@@ -121,7 +121,7 @@ export function GuestbookPanel() {
       {/* Entries */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {entries.length === 0 && (
-          <div style={{ color: 'var(--text-secondary)', fontSize: 10, textAlign: 'center', padding: '8px 0' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: 12, textAlign: 'center', padding: '8px 0' }}>
             Noch keine Einträge.
           </div>
         )}
@@ -132,14 +132,14 @@ export function GuestbookPanel() {
             borderTop: i > 0 ? '1px solid var(--bg-tertiary)' : 'none',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)' }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)' }}>
                 {e.name || 'Anonym'}
               </span>
-              <span style={{ fontSize: 9, color: 'var(--text-hint)' }}>
+              <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>
                 {new Date(e.created_at).toLocaleDateString('de-DE')}
               </span>
             </div>
-            <div style={{ fontSize: 10, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>
               {e.message}
             </div>
           </div>
