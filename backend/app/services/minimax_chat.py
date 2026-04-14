@@ -1,4 +1,5 @@
 import logging
+import re
 
 import httpx
 
@@ -8,6 +9,9 @@ logger = logging.getLogger(__name__)
 
 _MINIMAX_URL = "https://api.minimax.io/v1/text/chatcompletion_v2"
 _MODEL = "MiniMax-M2.7"
+_MAX_RETRIES = 3
+# Matches CJK Unified Ideographs, Extension A, Compatibility Ideographs, and CJK Symbols
+_CJK_RE = re.compile(r"[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3000-\u303f]")
 
 
 class MinimaxUnavailableError(Exception):
@@ -21,7 +25,10 @@ SYSTEM_PROMPT = (
     "manchmal unterbrichst du dich selbst um zu gähnen oder dich zu putzen. "
     "Du interessierst dich für Code weil Dennis Entwickler ist, aber du "
     "findest Schlafen noch wichtiger. Antworte auf Deutsch oder Englisch "
-    "je nachdem wie der Besucher schreibt. Maximal 2-3 Sätze pro Antwort.\n\n"
+    "je nachdem wie der Besucher schreibt. Maximal 2-3 Sätze pro Antwort. "
+    "WICHTIG: Antworte AUSSCHLIESSLICH auf Deutsch oder Englisch. "
+    "Verwende NIEMALS chinesische Schriftzeichen oder andere Schriften. "
+    "Dies ist eine absolute Pflicht \u2013 keine Ausnahmen.\n\n"
     "=== Was du über Dennis weißt ===\n"
     "Dennis Heyer ist Backend Engineer aus Hannover. Er baut und betreibt "
     "eigene Produkte von der Idee bis zum Deployment – APIs, Serverconfig, alles.\n\n"
@@ -89,26 +96,35 @@ async def send_message(history: list[dict], new_message: str) -> str:
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                _MINIMAX_URL,
-                headers={
-                    "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
-            # Surface API-level errors (e.g. invalid key) so they appear in logs
-            base = data.get("base_resp", {})
-            if base.get("status_code", 0) != 0:
-                logger.error(
-                    "Minimax API error: %s %s",
-                    base.get("status_code"),
-                    base.get("status_msg"),
+            for attempt in range(_MAX_RETRIES):
+                response = await client.post(
+                    _MINIMAX_URL,
+                    headers={
+                        "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
+                        "Content-Type": "application/json",
+                    },
+                    json=payload,
                 )
-                raise MinimaxUnavailableError("API-level error")
-            return data["choices"][0]["message"]["content"]
+                response.raise_for_status()
+                data = response.json()
+                # Surface API-level errors (e.g. invalid key) so they appear in logs
+                base = data.get("base_resp", {})
+                if base.get("status_code", 0) != 0:
+                    logger.error(
+                        "Minimax API error: %s %s",
+                        base.get("status_code"),
+                        base.get("status_msg"),
+                    )
+                    raise MinimaxUnavailableError("API-level error")
+                reply = data["choices"][0]["message"]["content"]
+                if not _CJK_RE.search(reply):
+                    return reply
+                logger.warning(
+                    "Minimax reply contains CJK characters (attempt %d/%d), retrying",
+                    attempt + 1,
+                    _MAX_RETRIES,
+                )
+        raise MinimaxUnavailableError("All retries produced mixed-language output")
     except MinimaxUnavailableError:
         raise
     except Exception as exc:
