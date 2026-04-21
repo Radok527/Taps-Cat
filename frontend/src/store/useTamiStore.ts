@@ -14,6 +14,7 @@ interface TamiStore {
   lastActionAt: number   // ms timestamp of last lastAction update
   visitorCount: number
   dailyImagesLeft: number
+  maintenanceMode: boolean
 
   // Chat
   chatHistory: ChatMessage[]
@@ -40,6 +41,7 @@ interface TamiStore {
     lastAction: string
     visitorCount: number
     dailyImagesLeft: number
+    maintenanceMode?: boolean
   }): void
   setMessagesLeft(n: number): void
   addChatMessage(msg: ChatMessage): void
@@ -58,6 +60,7 @@ export const useTamiStore = create<TamiStore>((set) => ({
   lastActionAt: 0,
   visitorCount: 0,
   dailyImagesLeft: 40,
+  maintenanceMode: false,
 
   chatHistory: [],
   messagesLeft: 15,
@@ -73,12 +76,13 @@ export const useTamiStore = create<TamiStore>((set) => ({
   animationOverrideUntil: 0,
   currentAnimation: 'idle',
 
-  setLiveState({ hunger, happy, lastAction, visitorCount, dailyImagesLeft }) {
+  setLiveState({ hunger, happy, lastAction, visitorCount, dailyImagesLeft, maintenanceMode }) {
     set((s) => ({
       hunger,
       happy,
       visitorCount,
       dailyImagesLeft,
+      maintenanceMode: maintenanceMode ?? s.maintenanceMode,
       lastAction,
       lastActionAt: lastAction !== s.lastAction ? Date.now() : s.lastActionAt,
     }))
