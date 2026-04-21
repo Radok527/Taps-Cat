@@ -5,6 +5,7 @@ export interface StateResponse {
   messages_left: number
   images_left: number
   visitor_count: number
+  maintenance_mode: boolean
 }
 
 export interface ChatResponse {
@@ -48,4 +49,5 @@ export interface WsMessage {
   last_action: string
   visitor_count: number
   daily_images_left: number
+  maintenance_mode: boolean
 }
