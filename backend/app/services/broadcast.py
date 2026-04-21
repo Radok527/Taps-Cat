@@ -33,4 +33,5 @@ async def publish_state(redis: Redis, state: dict) -> None:
         )
         await redis.publish(BROADCAST_CHANNEL, message)
     except Exception:
+        # Never let a publish failure break the interaction endpoint.
         logger.exception("Failed to publish state broadcast")

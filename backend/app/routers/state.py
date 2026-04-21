@@ -3,6 +3,7 @@ from redis.asyncio import Redis
 
 from app.dependencies import get_redis
 from app.schemas.state import StateResponse
+from app.services.broadcast import MAINTENANCE_KEY
 from app.services.cat_state import get_cat_state
 from app.utils.ip import get_ip, hash_ip
 
@@ -11,7 +12,6 @@ router = APIRouter()
 GLOBAL_CHAT_LIMIT = 2000
 PER_IP_CHAT_LIMIT = 15
 GLOBAL_IMAGE_LIMIT = 40
-MAINTENANCE_KEY = "maintenance:enabled"
 
 
 @router.get("/state", response_model=StateResponse)

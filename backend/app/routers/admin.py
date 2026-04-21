@@ -6,10 +6,8 @@ from redis.asyncio import Redis
 
 from app.config import settings
 from app.dependencies import get_redis
-from app.services.broadcast import publish_state
+from app.services.broadcast import MAINTENANCE_KEY, publish_state
 from app.services.cat_state import get_cat_state
-
-MAINTENANCE_KEY = "maintenance:enabled"
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
