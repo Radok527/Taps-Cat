@@ -7,3 +7,4 @@ class StateResponse(BaseModel):
     last_action: str
     messages_left: int
     images_left: int
+    maintenance_mode: bool = False
