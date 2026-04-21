@@ -8,12 +8,14 @@ import { ChatBox } from './ChatBox'
 import { GuestbookPanel } from './GuestbookPanel'
 import { Leaderboard } from './Leaderboard'
 import { ChallengeSuccess } from './ChallengeSuccess'
+import { MaintenanceOverlay } from './MaintenanceOverlay'
 
 type Tab = 'guestbook' | 'leaderboard'
 
 export function TamiWidget() {
   const setLiveState = useTamiStore((s) => s.setLiveState)
   const setMessagesLeft = useTamiStore((s) => s.setMessagesLeft)
+  const maintenanceMode = useTamiStore((s) => s.maintenanceMode)
   const [activeTab, setActiveTab] = useState<Tab>('guestbook')
 
   // Seed state from REST on mount
@@ -25,6 +27,7 @@ export function TamiWidget() {
         lastAction: s.last_action,
         visitorCount: s.visitor_count,
         dailyImagesLeft: s.images_left,
+        maintenanceMode: s.maintenance_mode,
       })
       setMessagesLeft(s.messages_left)
     }).catch(() => {/* ignore */})
@@ -52,20 +55,25 @@ export function TamiWidget() {
       position: 'relative',
       fontFamily: "'Courier New', Courier, monospace",
     }}>
-      {/* Top row: cat panel (180px) | right panel (flex) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '180px 1fr',
-        borderBottom: '1px solid var(--border)',
-      }}>
-        {/* Left: cat + stats */}
-        <CatCanvas />
+      {/* Top row wrapper — relative so MaintenanceOverlay is scoped to this area */}
+      <div style={{ position: 'relative' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '180px 1fr',
+          borderBottom: '1px solid var(--border)',
+        }}>
+          {/* Left: cat + stats */}
+          <CatCanvas />
 
-        {/* Right: action buttons + chat */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <ActionButtons />
-          <ChatBox />
+          {/* Right: action buttons + chat */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <ActionButtons />
+            <ChatBox />
+          </div>
         </div>
+
+        {/* Maintenance overlay — covers only the top row */}
+        {maintenanceMode && <MaintenanceOverlay />}
       </div>
 
       {/* Bottom row: tabs */}
