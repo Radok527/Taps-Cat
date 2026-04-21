@@ -206,5 +206,9 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-/frontend/node_modules/docker-compose.yml
+/frontend/node_modules/
 docker-compose.yml
+.superpowers/
+.worktrees/
+docs/
+.claude/
