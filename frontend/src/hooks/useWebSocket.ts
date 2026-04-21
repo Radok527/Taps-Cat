@@ -16,6 +16,7 @@ export function useWebSocket() {
         lastAction: msg.last_action,
         visitorCount: msg.visitor_count,
         dailyImagesLeft: msg.daily_images_left,
+        maintenanceMode: msg.maintenance_mode,
       })
     }
 
@@ -27,6 +28,7 @@ export function useWebSocket() {
           lastAction: s.last_action,
           visitorCount: s.visitor_count,
           dailyImagesLeft: s.images_left,
+          maintenanceMode: s.maintenance_mode,
         })
         setMessagesLeft(s.messages_left)
       }).catch(() => {/* ignore */})
